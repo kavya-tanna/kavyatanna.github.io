@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Designs | Kavya Tanna</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="style.css"/>
+
+  <style>
+    /* =============================================
+       DESIGNS PAGE — extra styles only
+       (all base tokens, navbar, banner, footer
+        come from style.css as-is)
+       ============================================= */
+
+    .designs-section { padding: 72px 0 90px; }
+
+    /* ---------- Filter Bar ---------- */
+    .filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 42px;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 7px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.22s ease;
+    }
+    .filter-btn:hover {
+      border-color: var(--mocha);
+      color: var(--mocha);
+      background: var(--mocha-pale);
+    }
+    .filter-btn.active {
+      background: var(--mocha);
+      border-color: var(--mocha);
+      color: #fff;
+    }
+
+    /* ---------- Design Card ---------- */
+    .design-card {
+      background: var(--cream);
+      border-radius: var(--r);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+
+      /* entrance animation */
+      opacity: 0;
+      transform: translateY(20px);
+      animation: cardFadeUp 0.5s ease forwards;
+    }
+    .design-card:hover {
+      transform: translateY(-7px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(123,73,85,0.30);
+    }
+    @keyframes cardFadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Image / thumb */
+    .design-thumb {
+      position: relative;
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: linear-gradient(135deg,rgba(123,73,85,0.10),rgba(123,73,85,0.04));
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .design-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.45s ease;
+    }
+    .design-card:hover .design-thumb img { transform: scale(1.06); }
+
+    /* Placeholder shown when no real image is set */
+    .design-thumb .thumb-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      background: linear-gradient(135deg,rgba(123,73,85,0.12),rgba(123,73,85,0.04));
+    }
+
+    /* Category badge */
+    .design-badge {
+      position: absolute;
+      top: 11px;
+      left: 12px;
+      font-family: var(--font-body);
+      font-size: 0.67rem;
+      font-weight: 600;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      background: rgba(253,249,242,0.90);
+      backdrop-filter: blur(5px);
+      color: var(--mocha);
+      border: 1px solid rgba(123,73,85,0.22);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Hover overlay */
+    .design-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(43,26,30,0.60);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .design-card:hover .design-overlay { opacity: 1; }
+
+    .overlay-view-btn {
+      background: var(--cream);
+      color: var(--mocha);
+      border: none;
+      font-family: var(--font-body);
+      font-size: 0.77rem;
+      font-weight: 600;
+      letter-spacing: 0.9px;
+      text-transform: uppercase;
+      padding: 9px 24px;
+      border-radius: 20px;
+      cursor: pointer;
+      transform: translateY(6px);
+      transition: transform 0.28s ease, background 0.22s, color 0.22s;
+    }
+    .design-card:hover .overlay-view-btn { transform: translateY(0); }
+    .overlay-view-btn:hover { background: var(--mocha); color: #fff; }
+
+    /* Card body text */
+    .design-card-body {
+      padding: 20px 22px 24px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .design-card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 7px;
+    }
+    .design-card-title {
+      font-family: var(--font-head);
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--dark);
+      line-height: 1.25;
+    }
+    .design-card-date {
+      font-family: var(--font-body);
+      font-size: 0.7rem;
+      color: var(--muted);
+      white-space: nowrap;
+      margin-left: 10px;
+      flex-shrink: 0;
+    }
+    .design-card-desc {
+      font-size: 0.87rem;
+      color: var(--muted);
+      line-height: 1.65;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Empty state */
+    .designs-empty {
+      display: none;
+      text-align: center;
+      padding: 70px 0;
+      color: var(--muted);
+    }
+    .designs-empty .empty-icon { font-size: 2.8rem; margin-bottom: 14px; opacity: 0.45; }
+    .designs-empty p { font-size: 0.93rem; }
+
+    /* ---------- Lightbox ---------- */
+    .lb-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(43,26,30,0.90);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .lb-overlay.open { opacity: 1; pointer-events: all; }
+
+    .lb-box {
+      position: relative;
+      max-width: 860px;
+      width: 100%;
+      transform: scale(0.93);
+      transition: transform 0.32s cubic-bezier(.25,.8,.25,1);
+    }
+    .lb-overlay.open .lb-box { transform: scale(1); }
+
+    .lb-box img {
+      width: 100%;
+      max-height: 75vh;
+      object-fit: contain;
+      border-radius: var(--r);
+      box-shadow: 0 32px 80px rgba(43,26,30,0.6);
+      display: block;
+    }
+    .lb-info {
+      margin-top: 16px;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+    }
+    .lb-title {
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--vanilla);
+    }
+    .lb-date {
+      font-family: var(--font-body);
+      font-size: 0.75rem;
+      color: rgba(244,237,219,0.55);
+    }
+    .lb-desc {
+      margin-top: 5px;
+      font-family: var(--font-body);
+      font-size: 0.87rem;
+      color: rgba(244,237,219,0.60);
+      line-height: 1.6;
+    }
+    .lb-close {
+      position: absolute;
+      top: -14px;
+      right: -14px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      color: var(--mocha);
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.22s, color 0.22s;
+      line-height: 1;
+    }
+    .lb-close:hover { background: var(--mocha); color: #fff; }
+
+    @media (max-width: 576px) {
+      .filter-btn { font-size: 0.7rem; padding: 6px 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAVBAR ========== -->
+  <nav class="navbar navbar-expand-lg">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">Kavya <em>Tanna</em></a>
+      <button class="navbar-toggler" type="button"
+        data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav gap-1">
+          <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="about.html">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="projects.html">Projects</a></li>
+          <li class="nav-item"><a class="nav-link active" href="designs.html">Designs</a></li>
+          <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ========== PAGE BANNER ========== -->
+  <section class="page-banner">
+    <div class="container">
+      <h1 class="fade-up">My <span style="color:var(--mocha);font-style:italic">Designs</span></h1>
+      <p class="fade-up delay-1">Posters, graphics, UI explorations &amp; more — updated regularly.</p>
+    </div>
+  </section>
+
+  <!-- ========== DESIGNS SECTION ========== -->
+  <section class="designs-section">
+    <div class="container">
+
+      <div class="mb-4 fade-up">
+        <h2 class="section-title">Creative <span>Work</span></h2>
+        <div class="divider"></div>
+        <p class="section-subtitle">Everything I've designed — from posters to UI screens.</p>
+      </div>
+
+      <!-- ── FILTER BAR ──
+           To add a new category:
+           1. Add: <button class="filter-btn" data-filter="yourcategory">Label</button>
+           2. Use  data-category="yourcategory"  on the matching card column -->
+      <div class="filter-bar fade-up delay-1" id="filterBar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="poster">Posters</button>
+        <button class="filter-btn" data-filter="ui">UI</button>
+        <button class="filter-btn" data-filter="logo">Logos</button>
+        <button class="filter-btn" data-filter="graphic">Graphics</button>
+      </div>
+
+      <!-- ── DESIGNS GRID ──
+      ════════════════════════════════════════════════════
+      ★  HOW TO ADD A NEW DESIGN CARD  ★
+
+      1. Copy the block between the dashes below.
+      2. Paste it just above the comment
+         "★ ADD NEW CARDS ABOVE THIS LINE ★"
+      3. Update these 6 things:
+           data-category   → poster | ui | logo | graphic
+           src             → images/designs/your-file.jpg
+           alt             → short description
+           .design-badge   → label shown on image
+           .design-card-title → design name
+           .design-card-date  → e.g.  Apr 2025
+           .design-card-desc  → 1-2 line description
+
+      If you don't have an image yet, remove the <img> tag
+      and use the placeholder emoji <div> instead (see Card 1).
+      ════════════════════════════════════════════════════ -->
+      <div class="row g-4" id="designsGrid">
+
+        <!-- ─── CARD TEMPLATE (copy from here) ───────────────
+        <div class="col-sm-6 col-lg-4" data-category="poster">
+          <div class="design-card">
+            <div class="design-thumb">
+              <img src="images/designs/YOUR-FILE.jpg" alt="Alt text" loading="lazy"/>
+              <span class="design-badge">Poster</span>
+              <div class="design-overlay">
+                <button class="overlay-view-btn">View Full</button>
+              </div>
+            </div>
+            <div class="design-card-body">
+              <div class="design-card-meta">
+                <h3 class="design-card-title">Title Here</h3>
+                <span class="design-card-date">Apr 2025</span>
+              </div>
+              <p class="design-card-desc">Short 1–2 line description of this design.</p>
+            </div>
+          </div>
+        </div>
+        ─── end template ─────────────────────────────────── -->
+
+
+
+        <!-- CARD 1 — placeholder -->
+        <div class="col-sm-6 col-lg-4" data-category="ui">
+          <div class="design-card">
+            <div class="design-thumb">
+              <img src="images/designs/poster-1.jpg" alt="My Poster" loading="lazy"/>
+              <span class="design-badge">UI</span>
+              <div class="design-overlay">
+                <button class="overlay-view-btn">View Full</button>
+              </div>
+            </div>
+            <div class="design-card-body">
+              <div class="design-card-meta">
+                <h3 class="design-card-title">Nike Shoes UI</h3>
+                <span class="design-card-date">Apr 2026</span>
+              </div>
+              <p class="design-card-desc">A visually immersive hero section designed to highlight product identity, enhance user engagement, and drive conversions.</p>
+            </div>
+          </div>
+        </div>
+
+
+         <!-- CARD 1 — placeholder -->
+        <div class="col-sm-6 col-lg-4" data-category="ui">
+          <div class="design-card">
+            <div class="design-thumb">
+              <img src="images/designs/poster-2.jpg" alt="My Poster" loading="lazy"/>
+              <span class="design-badge">UI</span>
+              <div class="design-overlay">
+                <button class="overlay-view-btn">View Full</button>
+              </div>
+            </div>
+            <div class="design-card-body">
+              <div class="design-card-meta">
+                <h3 class="design-card-title">Logitech Headset UI</h3>
+                <span class="design-card-date">Apr 2026</span>
+              </div>
+              <p class="design-card-desc">A clean and immersive product hero section designed to enhance user focus, highlight key features, and deliver a premium audio experience.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- CARD 3 — placeholder -->
+        <div class="col-sm-6 col-lg-4" data-category="logo">
+          <div class="design-card">
+            <div class="design-thumb">
+              <div class="thumb-placeholder">✏️</div>
+              <span class="design-badge">Logo</span>
+              <div class="design-overlay">
+                <button class="overlay-view-btn">View Full</button>
+              </div>
+            </div>
+            <div class="design-card-body">
+              <div class="design-card-meta">
+                <h3 class="design-card-title">Logo Design</h3>
+                <span class="design-card-date">Apr 2025</span>
+              </div>
+              <p class="design-card-desc">Add your logo here — replace the emoji placeholder with your image file.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ★ ADD NEW CARDS ABOVE THIS LINE ★ -->
+
+        <!-- No-results message -->
+        <div class="col-12 designs-empty" id="designsEmpty">
+          <div class="empty-icon">✦</div>
+          <p>No designs in this category yet — check back soon!</p>
+        </div>
+
+      </div><!-- /row -->
+    </div>
+  </section>
+
+  <!-- ========== FOOTER ========== -->
+  <footer class="site-footer">
+    <p>© 2025 <span>Kavya Tanna</span>. Crafted with ❤️ &amp; a cup of chai.</p>
+  </footer>
+
+  <!-- ========== LIGHTBOX ========== -->
+  <div class="lb-overlay" id="lbOverlay" role="dialog" aria-modal="true" aria-label="Design preview">
+    <div class="lb-box">
+      <button class="lb-close" id="lbClose" aria-label="Close">✕</button>
+      <img id="lbImg" src="" alt=""/>
+      <div class="lb-info">
+        <span class="lb-title" id="lbTitle"></span>
+        <span class="lb-date"  id="lbDate"></span>
+      </div>
+      <p class="lb-desc" id="lbDesc"></p>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="script.js"></script>
+  <script>
+    /* ── Staggered entrance animation ── */
+    document.querySelectorAll('.design-card').forEach((card, i) => {
+      card.style.animationDelay = `${i * 0.09}s`;
+    });
+
+    /* ── Filter logic ── */
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    const cols       = document.querySelectorAll('#designsGrid [data-category]');
+    const emptyEl    = document.getElementById('designsEmpty');
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+        let visible  = 0;
+
+        cols.forEach(col => {
+          const match = filter === 'all' || col.dataset.category === filter;
+          const card  = col.querySelector('.design-card');
+          if (match) {
+            col.style.display = '';
+            card.style.animation = 'none';
+            void card.offsetWidth; // reflow to restart animation
+            card.style.animation = '';
+            card.style.animationDelay = `${visible * 0.09}s`;
+            visible++;
+          } else {
+            col.style.display = 'none';
+          }
+        });
+
+        emptyEl.style.display = visible === 0 ? 'block' : 'none';
+      });
+    });
+
+    /* ── Lightbox ── */
+    const lbOverlay = document.getElementById('lbOverlay');
+    const lbImg     = document.getElementById('lbImg');
+    const lbTitle   = document.getElementById('lbTitle');
+    const lbDate    = document.getElementById('lbDate');
+    const lbDesc    = document.getElementById('lbDesc');
+    const lbClose   = document.getElementById('lbClose');
+
+    document.querySelectorAll('.design-card').forEach(card => {
+      card.addEventListener('click', () => {
+        // Support both real <img> and emoji placeholder
+        const imgEl = card.querySelector('.design-thumb img');
+        if (imgEl) {
+          lbImg.src = imgEl.src;
+          lbImg.alt = imgEl.alt;
+          lbImg.style.display = 'block';
+        } else {
+          lbImg.style.display = 'none';
+        }
+        lbTitle.textContent = card.querySelector('.design-card-title').textContent;
+        lbDate.textContent  = card.querySelector('.design-card-date').textContent;
+        lbDesc.textContent  = card.querySelector('.design-card-desc').textContent;
+
+        lbOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    lbClose.addEventListener('click', closeLb);
+    lbOverlay.addEventListener('click', e => { if (e.target === lbOverlay) closeLb(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+    function closeLb() {
+      lbOverlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+  </script>
+</body>
+</html>
